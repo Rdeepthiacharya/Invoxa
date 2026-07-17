@@ -9,7 +9,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  AreaChart,
+  ComposedChart,
   Area,
   Line,
   Legend
@@ -19,20 +19,26 @@ import formatCurrency from "../utils/formatCurrency";
 const COLORS = [
   "#14b8a6", "#8b5cf6", "#f43f5e",];
 
-const CustomTooltip = ({ active, payload }) => {
-  if (!active || !payload?.length) return null;
-
-  return (
-    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-lg">
-      <p className="text-sm font-semibold text-slate-800">
-        {payload[0].name}
-      </p>
-      <p className="text-sm text-slate-600">
-        {formatCurrency(payload[0].value)}
-      </p>
-    </div>
-  );
-};
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (!active || !payload || payload.length === 0) return null;
+  
+    return (
+      <div className="rounded-xl border bg-white p-3 shadow">
+        <p className="font-semibold">{label}</p>
+  
+        {payload.map((entry) => (
+          <div
+            key={entry.dataKey}
+            className="flex justify-between gap-6"
+            style={{ color: entry.color }}
+          >
+            <span>{entry.name}</span>
+            <span>₹{entry.value.toLocaleString()}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
 const formatMonthLabel = (monthKey) => {
   const [year, month] = monthKey.split("-");
@@ -165,7 +171,7 @@ export default function DashboardCharts({
             Revenue vs Expenses
           </h4>
           <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={trendData} margin={{ top: 10, right: 6, left: 0, bottom: 0 }}>
+            <ComposedChart data={trendData} margin={{ top: 10, right: 6, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.35} />
@@ -175,6 +181,10 @@ export default function DashboardCharts({
                   <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.35} />
                   <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
                 </linearGradient>
+                <linearGradient id="profitGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.35} />
+                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+              </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
               <XAxis
@@ -197,6 +207,7 @@ export default function DashboardCharts({
                 stroke="#14b8a6"
                 strokeWidth={3}
                 fill="url(#revenueGradient)"
+                dot={{ r: 3 }}
                 activeDot={{ r: 6 }}
               />
               <Area
@@ -205,16 +216,20 @@ export default function DashboardCharts({
                 stroke="#f43f5e"
                 strokeWidth={3}
                 fill="url(#expenseGradient)"
+                dot={{ r: 3 }}
                 activeDot={{ r: 6 }}
               />
-              <Line
+              <Area
                 type="monotone"
                 dataKey="profit"
                 stroke="#8b5cf6"
                 strokeWidth={3}
-                dot={{ r: 4 }}
+                fill="none"
+                dot={{ r: 3 }}
+                activeDot={{ r: 6 }}
+                connectNulls={true}
               />
-            </AreaChart>
+            </ComposedChart>
           </ResponsiveContainer>
         </div>
 

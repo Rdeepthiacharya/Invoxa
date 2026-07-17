@@ -1,0 +1,21 @@
+# Dependencies
+frontend/node_modules/
+
+# Build output
+frontend/dist/
+
+# Logs
+backend/logs/
+*.log
+
+# Cookies
+backend/api/cookies.txt
+
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
